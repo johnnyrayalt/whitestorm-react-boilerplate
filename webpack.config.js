@@ -1,7 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const TerserPlugin = require('terser-webpack-plugin')
 const CompressionPlugin = require('compression-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin')
 const HtmlWebpackInlineSourcePlugin = require('html-webpack-inline-source-plugin')
@@ -12,9 +12,7 @@ const mode = process.env.NODE_ENV || 'production'
 
 module.exports = {
   entry: {
-    app: path.resolve(__dirname, 'src/index.js'),
-    modules: path.resolve(__dirname, 'src/modules/FancyMaterialModule.js'),
-    components: path.resolve(__dirname, 'src/components/BasicComponent.js'),
+    app: path.resolve(__dirname, 'src/index.jsx'),
     stylesheets: path.resolve(__dirname, 'src/stylesheets/index.css')
   },
 
@@ -23,7 +21,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.(js|jsx)$/,
         include: path.resolve(__dirname, 'src'),
         exclude: /node_modules/,
         use: {
@@ -74,9 +72,9 @@ module.exports = {
       new webpack.NamedModulesPlugin(),
       new HtmlWebpackPlugin({
         title: 'WhitestormJS + React Boilerplate',
-        filename: 'index.html',
+        template: path.resolve(__dirname, 'src', 'index.jsx'),
+        filename: './index.html',
         appMountId: 'app',
-        template: path.resolve(__dirname, './src/index.template.ejs'),
         inject: 'body',
         chunks: 'all',
         minify: true
@@ -100,8 +98,7 @@ module.exports = {
   },
 
   resolve: {
-    symlinks: false,
-    modules: [path.resolve('node_modules')]
+    alias
   },
 
   performance: {
@@ -110,7 +107,7 @@ module.exports = {
 
   optimization: {
     runtimeChunk: 'single',
-    minimizer: [ new UglifyJsPlugin() ],
+    minimizer: [new TerserPlugin()],
     splitChunks: {
       chunks: 'all',
       minSize: 0
